@@ -320,11 +320,46 @@ io2.on("connection", (socket) => {
     switch (message) {
       case "1":
         responseMessage =
-          "Help: Here are the available commands: \n2. Video Response \n3. Audio Response";
+          "Help: Here are the available commands: \n2. Video Response in KB \n3. Video Response in MB \n4. Video Response in GB  \n5. Audio Response in KB \n6. Audio Response in MB";
         socket.emit("receive_message", responseMessage);
         break;
 
       case "2": {
+        responseMessage = "Video Response";
+        socket.emit("receive_message", responseMessage);
+
+        const videoPath = path.join(
+          __dirname,
+          "public",
+          "assets",
+          "video",
+          "video2.mp4"
+        );
+
+        if (fs.existsSync(videoPath)) {
+          const videoStats = fs.statSync(videoPath);
+          console.log("Video file stats:", videoStats);
+
+          const videoSize = formatFileSize(videoStats.size);
+          console.log("Formatted video size:", videoSize);
+
+          socket.emit("video_metadata", {
+            name: "video.mp4",
+            size: formatFileSize(videoStats.size),
+            type: "video/mp4",
+          });
+
+          const videoStream = fs.createReadStream(videoPath);
+          videoStream.on("data", (chunk) => {
+            socket.emit("video_chunk", chunk);
+          });
+          videoStream.on("end", () => socket.emit("video_end"));
+        } else {
+          console.error("Video file not found at", videoPath);
+        }
+        break;
+      }
+      case "3": {
         responseMessage = "Video Response";
         socket.emit("receive_message", responseMessage);
 
@@ -359,8 +394,78 @@ io2.on("connection", (socket) => {
         }
         break;
       }
+      case "4": {
+        responseMessage = "Video Response";
+        socket.emit("receive_message", responseMessage);
 
-      case "3": {
+        const videoPath = path.join(
+          __dirname,
+          "public",
+          "assets",
+          "video",
+          "video3.mp4"
+        );
+
+        if (fs.existsSync(videoPath)) {
+          const videoStats = fs.statSync(videoPath);
+          console.log("Video file stats:", videoStats);
+
+          const videoSize = formatFileSize(videoStats.size);
+          console.log("Formatted video size:", videoSize);
+
+          socket.emit("video_metadata", {
+            name: "video.mp4",
+            size: formatFileSize(videoStats.size),
+            type: "video/mp4",
+          });
+
+          const videoStream = fs.createReadStream(videoPath);
+          videoStream.on("data", (chunk) => {
+            socket.emit("video_chunk", chunk);
+          });
+          videoStream.on("end", () => socket.emit("video_end"));
+        } else {
+          console.error("Video file not found at", videoPath);
+        }
+        break;
+      }
+
+      case "5": {
+        responseMessage = "Audio Response";
+        socket.emit("receive_message", responseMessage);
+
+        const audioPath = path.join(
+          __dirname,
+          "public",
+          "assets",
+          "audio",
+          "audio2.mp3"
+        );
+
+        if (fs.existsSync(audioPath)) {
+          const audioStats = fs.statSync(audioPath);
+          console.log("Audio file stats:", audioStats);
+
+          const audioSize = formatFileSize(audioStats.size);
+          console.log("Formatted audio size:", audioSize);
+
+          socket.emit("audio_metadata", {
+            name: "audio.mp3",
+            size: formatFileSize(audioStats.size),
+            type: "audio/mp3",
+          });
+
+          const audioStream = fs.createReadStream(audioPath);
+          audioStream.on("data", (chunk) => {
+            socket.emit("audio_chunk", chunk);
+          });
+          audioStream.on("end", () => socket.emit("audio_end"));
+        } else {
+          console.error("Audio file not found at", audioPath);
+        }
+        break;
+      }
+      case "6": {
         responseMessage = "Audio Response";
         socket.emit("receive_message", responseMessage);
 
